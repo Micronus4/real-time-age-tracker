@@ -6,117 +6,125 @@
     <title>Real-Time Age Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-900 text-gray-100 min-h-screen">
+<body class="bg-gray-900 text-gray-100 min-h-screen antialiased selection:bg-cyan-500 selection:text-white">
 
-    <div class="max-w-5xl mx-auto p-8 text-gray-100 relative">
+    <div class="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8 text-gray-100 relative">
         
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div class="flex items-center space-x-4">
-                <svg class="rounded-xl shadow-md border border-gray-700 bg-gradient-to-br from-teal-600 via-emerald-700 to-cyan-800" width="56" height="56" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <svg class="rounded-xl shadow-md border border-gray-700 bg-gradient-to-br from-teal-600 via-emerald-700 to-cyan-800 shrink-0" width="56" height="56" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="50" cy="50" r="38" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="2" stroke-dasharray="4 6"/>
                     <path d="M 50,20 L 50,50 L 70,65" fill="none" stroke="#22d3ee" stroke-width="4" stroke-linecap="round"/>
                     <circle cx="50" cy="50" r="4" fill="#ffffff"/>
                 </svg>
                 <div>
-                    <h1 class="text-3xl font-bold text-white tracking-tight">Real-Time Age Tracker</h1>
-                    <p class="text-gray-400 text-sm">This tracks people's ages down to the minute (if you know it).</p>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Real-Time Age Tracker</h1>
+                    <p class="text-gray-400 text-xs sm:text-sm">Tracks ages down to the minute automatically.</p>
                 </div>
             </div>
-            <div class="bg-gray-800 border border-gray-700 px-4 py-2 rounded-lg flex items-center space-x-2 text-xs font-mono">
+            <div class="bg-gray-800 border border-gray-700 px-3 py-1.5 rounded-lg flex items-center space-x-2 text-xs font-mono w-full sm:w-auto justify-center sm:justify-start">
                 <span class="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></span>
-                <span class="text-gray-400">Total Tracked Profiles:</span>
+                <span class="text-gray-400">Tracked Profiles:</span>
                 <span id="live-count-badge" class="text-cyan-400 font-bold">0</span>
             </div>
         </div>
 
-        <div class="bg-gray-800/90 p-6 rounded-lg shadow-xl border border-gray-800 mb-8">
-            <h2 class="text-xl font-bold text-white mb-6">Add Entry</h2>
+        <div class="bg-gray-800/90 p-4 sm:p-6 rounded-lg shadow-xl border border-gray-800 mb-8">
+            <h2 class="text-lg sm:text-xl font-bold text-white mb-6">Add Entry</h2>
             
             <div class="space-y-6">
-                <div class="flex flex-col md:flex-row gap-4 items-start">
-                    <div class="w-full max-w-[180px]">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end lg:flex lg:flex-row lg:flex-wrap">
+                    <div class="w-full lg:max-w-[180px]">
                         <label class="block text-[11px] font-bold text-gray-400 uppercase mb-1 tracking-wider">First Name</label>
                         <input type="text" id="form-first-name" placeholder="Felix" class="w-full h-11 bg-gray-900/50 border border-gray-700 rounded p-2.5 text-white text-sm focus:outline-none focus:border-cyan-500/80">
                     </div>
 
-                    <div class="w-full max-w-[220px]">
-                        <label class="block text-[11px] font-bold text-gray-400 uppercase mb-1 tracking-wider">Middle Name(s) <span class="text-gray-500 font-normal lowercase">(optional)</span></label>
+                    <div class="w-full lg:max-w-[220px]">
+                        <label class="block text-[11px] font-bold text-gray-400 uppercase mb-1 tracking-wider">Middle Name(s) <span class="text-gray-500 font-normal lowercase">(opt)</span></label>
                         <input type="text" id="form-middle-name" placeholder="Allen" class="w-full h-11 bg-gray-900/50 border border-gray-700 rounded p-2.5 text-white text-sm focus:outline-none focus:border-cyan-500/80">
                     </div>
 
-                    <div class="w-full max-w-[180px]">
+                    <div class="w-full lg:max-w-[180px]">
                         <label class="block text-[11px] font-bold text-gray-400 uppercase mb-1 tracking-wider">Last Name</label>
                         <input type="text" id="form-last-name" placeholder="Harris" class="w-full h-11 bg-gray-900/50 border border-gray-700 rounded p-2.5 text-white text-sm focus:outline-none focus:border-cyan-500/80">
                     </div>
 
-                    <div class="w-full md:w-28 shrink-0">
+                    <div class="w-full lg:w-40 shrink-0">
                         <label class="block text-[11px] font-bold text-gray-400 uppercase mb-1 tracking-wider">Gender</label>
                         <div class="flex items-center space-x-1 bg-gray-900/50 p-1.5 rounded h-11 border border-gray-700">
-                            <button type="button" id="gender-f" class="flex-1 h-full text-xs font-bold rounded bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors duration-150">F</button>
-                            <button type="button" id="gender-m" class="flex-1 h-full text-xs font-bold rounded bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors duration-150">M</button>
+                            <button type="button" id="gender-f" class="flex-1 h-full text-xs font-bold rounded bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors duration-75 ease-out">F</button>
+                            <button type="button" id="gender-m" class="flex-1 h-full text-xs font-bold rounded bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors duration-75 ease-out">M</button>
+                            <button type="button" id="gender-nb" class="flex-1 h-full text-xs font-bold rounded bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors duration-75 ease-out">NB</button>
                         </div>
                     </div>
                 </div>
 
-                <div class="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-6 pt-2">
-                    <div class="flex flex-col sm:flex-row items-start gap-6 flex-1 w-full">
-                        <div class="space-y-1.5 w-full max-w-[320px]">
+                <div class="flex flex-col lg:flex-row items-stretch lg:items-end justify-between gap-6 pt-2">
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-start gap-6 flex-1 w-full">
+                        <div class="space-y-1.5 w-full lg:max-w-[320px]">
                             <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider">Birthdate</label>
-                            <input type="text" id="form-birth-date" placeholder="e.g., &quot;July 6, 2026&quot;, &quot;6th of July, 2026&quot;, etc." class="w-full h-10 bg-gray-900/50 border border-gray-700 rounded p-2.5 text-white text-xs focus:outline-none focus:border-cyan-500">
+                            <input type="text" id="form-birth-date" placeholder="e.g., &quot;July 6, 2026&quot;, &quot;6th of July, 2026&quot;" class="w-full h-10 bg-gray-900/50 border border-gray-700 rounded p-2.5 text-white text-xs focus:outline-none focus:border-cyan-500">
                             <p id="date-preview" class="text-[11px] text-gray-500 italic h-4 min-h-4"></p>
                         </div>
 
                         <div class="space-y-1.5 shrink-0">
                             <h3 class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Birth Time <span class="text-gray-500 font-normal lowercase">(optional)</span></h3>
-                            <div class="flex items-center space-x-2 bg-gray-900/50 px-3 py-1 rounded border border-gray-700 h-10">
-                                <input type="text" id="input-hour" value="--" maxlength="2" class="w-8 bg-gray-800/80 border border-gray-700 rounded text-center text-xs font-mono font-bold text-cyan-400 focus:outline-none focus:border-cyan-500 p-0.5">
-                                <span class="text-gray-600 font-bold select-none pb-0.5 text-xs">:</span>
-                                <input type="text" id="input-minute" value="--" maxlength="2" class="w-8 bg-gray-800/80 border border-gray-700 rounded text-center text-xs font-mono font-bold text-cyan-400 focus:outline-none focus:border-cyan-500 p-0.5">
+                            <div class="flex items-center space-x-2 bg-gray-900/50 px-3 py-1 rounded border border-gray-700 h-10 justify-between sm:justify-start">
+                                <div class="flex items-center space-x-1">
+                                    <input type="text" id="input-hour" value="--" maxlength="2" class="w-8 bg-gray-800/80 border border-gray-700 rounded text-center text-xs font-mono font-bold text-cyan-400 focus:outline-none focus:border-cyan-500 p-0.5">
+                                    <span class="text-gray-600 font-bold select-none pb-0.5 text-xs">:</span>
+                                    <input type="text" id="input-minute" value="--" maxlength="2" class="w-8 bg-gray-800/80 border border-gray-700 rounded text-center text-xs font-mono font-bold text-cyan-400 focus:outline-none focus:border-cyan-500 p-0.5">
+                                </div>
                                 
                                 <div class="flex items-center space-x-1 pl-2 border-l border-gray-700 h-full py-1">
-                                    <button type="button" id="ampm-am" class="px-2 h-full text-[10px] font-bold rounded bg-cyan-600 text-white transition-colors duration-150">AM</button>
-                                    <button type="button" id="ampm-pm" class="px-2 h-full text-[10px] font-bold rounded bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors duration-150">PM</button>
+                                    <button type="button" id="ampm-am" class="px-2 h-full text-[10px] font-bold rounded bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors duration-75 ease-out">AM</button>
+                                    <button type="button" id="ampm-pm" class="px-2 h-full text-[10px] font-bold rounded bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors duration-75 ease-out">PM</button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="pb-0.5 w-full lg:w-auto">
-                        <button type="button" id="submit-btn" disabled class="w-full lg:w-48 bg-gray-700 text-gray-500 font-semibold py-2 px-4 rounded transition-colors duration-150 shadow-none cursor-not-allowed text-sm h-10">Confirm</button>
+                        <button type="button" id="submit-btn" disabled class="w-full lg:w-48 bg-gray-700 text-gray-500 font-semibold py-2px px-4 rounded transition-colors duration-75 shadow-none cursor-not-allowed text-sm h-10">Confirm</button>
                     </div>
                 </div>
             </div>
         </div>
 
         <div id="table-wrapper" class="overflow-x-auto bg-gray-800 rounded-lg shadow-xl border border-gray-700 hidden">
-            <table class="min-w-full divide-y divide-gray-700 text-left text-sm">
-                <thead class="bg-gray-800 text-gray-300 uppercase text-xs font-semibold tracking-wider">
-                    <tr>
-                        <th class="px-6 py-4">Full Name</th>
-                        <th class="px-6 py-4 text-center">Gender</th>
-                        <th class="px-6 py-4">Date of Birth</th>
-                        <th class="px-6 py-4">Age</th>
-                        <th class="px-6 py-4 text-center">Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="table-body" class="divide-y divide-gray-700 bg-gray-900/50"></tbody>
-            </table>
+            <div class="inline-block min-w-full align-middle">
+                <table class="min-w-full divide-y divide-gray-700 text-left text-sm">
+                    <thead class="bg-gray-800 text-gray-300 uppercase text-[10px] sm:text-xs font-semibold tracking-wider whitespace-nowrap">
+                        <tr>
+                            <th class="px-4 sm:px-6 py-4">Full Name</th>
+                            <th class="px-4 sm:px-6 py-4 text-center">Gender</th>
+                            <th class="px-4 sm:px-6 py-4">Date of Birth</th>
+                            <th class="px-4 sm:px-6 py-4">Age</th>
+                            <th class="px-4 sm:px-6 py-4 text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body" class="divide-y divide-gray-700 bg-gray-900/50 whitespace-nowrap"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <script>
         let ageMatrixDataMap = JSON.parse(localStorage.getItem('age_matrix_gender_data')) || {};
-        let activeAmPm = "AM";
+        let activeAmPm = ""; 
         let activeGender = ""; 
         let isEditingTableCell = false;
 
         const MIN_BIRTH_DATE = new Date(1900, 0, 1);
 
-        const submitBtnEnabledClass = "w-full lg:w-48 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold py-2 px-4 rounded transition-colors duration-150 shadow-md cursor-pointer text-sm h-10";
-        const submitBtnDisabledClass = "w-full lg:w-48 bg-gray-700 text-gray-500 font-semibold py-2 px-4 rounded transition-colors duration-150 shadow-none cursor-not-allowed text-sm h-10";
+        const submitBtnEnabledClass = "w-full lg:w-48 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold py-2 px-4 rounded transition-colors duration-75 ease-out shadow-md cursor-pointer text-sm h-10";
+        const submitBtnDisabledClass = "w-full lg:w-48 bg-gray-700 text-gray-500 font-semibold py-2 px-4 rounded transition-colors duration-75 shadow-none cursor-not-allowed text-sm h-10";
 
-        const btnActiveStyle = "flex-1 h-full text-xs font-bold rounded bg-cyan-600 text-white transition-colors duration-150";
-        const btnInactiveStyle = "flex-1 h-full text-xs font-bold rounded bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors duration-150";
+        const btnActiveStyle = "flex-1 h-full text-xs font-bold rounded bg-cyan-600 text-white transition-colors duration-75 ease-out";
+        const btnInactiveStyle = "flex-1 h-full text-xs font-bold rounded bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors duration-75 ease-out";
+
+        const ampmActiveStyle = "px-2 h-full text-[10px] font-bold rounded bg-cyan-600 text-white transition-colors duration-75 ease-out";
+        const ampmInactiveStyle = "px-2 h-full text-[10px] font-bold rounded bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors duration-75 ease-out";
 
         const monthTypos = {
             'january': 'january', 'jan': 'january', 'januery': 'january',
@@ -171,7 +179,7 @@
             let m = parseInt(mRaw, 10);
             let hasTime = true;
 
-            if (isNaN(h) || hRaw === '--' || isNaN(m) || mRaw === '--') {
+            if (isNaN(h) || hRaw === '--' || isNaN(m) || mRaw === '--' || !activeAmPm) {
                 h = 0; 
                 m = 0;
                 hasTime = false;
@@ -269,15 +277,16 @@
         function setDefaultTimeToDash() {
             document.getElementById('input-hour').value = '--';
             document.getElementById('input-minute').value = '--';
-            activeAmPm = "AM";
-            document.getElementById('ampm-am').className = "px-2 h-full text-[10px] font-bold rounded bg-cyan-600 text-white transition-colors duration-150";
-            document.getElementById('ampm-pm').className = "px-2 h-full text-[10px] font-bold rounded bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors duration-150";
+            activeAmPm = "";
+            document.getElementById('ampm-am').className = ampmInactiveStyle;
+            document.getElementById('ampm-pm').className = ampmInactiveStyle;
         }
 
         function resetGenderToggle() {
             activeGender = "";
             document.getElementById('gender-f').className = btnInactiveStyle;
             document.getElementById('gender-m').className = btnInactiveStyle;
+            document.getElementById('gender-nb').className = btnInactiveStyle;
         }
 
         function resetFormDefaults() {
@@ -303,16 +312,41 @@
         document.getElementById('form-birth-date').addEventListener('blur', checkDateOnBlur);
 
         document.getElementById('gender-f').addEventListener('click', function() {
-            activeGender = "F";
-            this.className = btnActiveStyle;
-            document.getElementById('gender-m').className = btnInactiveStyle;
+            if (activeGender === "F") {
+                activeGender = "";
+                this.className = btnInactiveStyle;
+            } else {
+                activeGender = "F";
+                this.className = btnActiveStyle;
+                document.getElementById('gender-m').className = btnInactiveStyle;
+                document.getElementById('gender-nb').className = btnInactiveStyle;
+            }
             updateSubmitButtonState();
         });
 
         document.getElementById('gender-m').addEventListener('click', function() {
-            activeGender = "M";
-            this.className = btnActiveStyle;
-            document.getElementById('gender-f').className = btnInactiveStyle;
+            if (activeGender === "M") {
+                activeGender = "";
+                this.className = btnInactiveStyle;
+            } else {
+                activeGender = "M";
+                this.className = btnActiveStyle;
+                document.getElementById('gender-f').className = btnInactiveStyle;
+                document.getElementById('gender-nb').className = btnInactiveStyle;
+            }
+            updateSubmitButtonState();
+        });
+
+        document.getElementById('gender-nb').addEventListener('click', function() {
+            if (activeGender === "NB") {
+                activeGender = "";
+                this.className = btnInactiveStyle;
+            } else {
+                activeGender = "NB";
+                this.className = btnActiveStyle;
+                document.getElementById('gender-f').className = btnInactiveStyle;
+                document.getElementById('gender-m').className = btnInactiveStyle;
+            }
             updateSubmitButtonState();
         });
 
@@ -326,15 +360,26 @@
         });
 
         document.getElementById('ampm-am').addEventListener('click', function() {
-            activeAmPm = "AM";
-            this.className = "px-2 h-full text-[10px] font-bold rounded bg-cyan-600 text-white transition-colors duration-150";
-            document.getElementById('ampm-pm').className = "px-2 h-full text-[10px] font-bold rounded bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors duration-150";
+            if (activeAmPm === "AM") {
+                activeAmPm = "";
+                this.className = ampmInactiveStyle;
+            } else {
+                activeAmPm = "AM";
+                this.className = ampmActiveStyle;
+                document.getElementById('ampm-pm').className = ampmInactiveStyle;
+            }
             updateSubmitButtonState();
         });
+
         document.getElementById('ampm-pm').addEventListener('click', function() {
-            activeAmPm = "PM";
-            this.className = "px-2 h-full text-[10px] font-bold rounded bg-cyan-600 text-white transition-colors duration-150";
-            document.getElementById('ampm-am').className = "px-2 h-full text-[10px] font-bold rounded bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors duration-150";
+            if (activeAmPm === "PM") {
+                activeAmPm = "";
+                this.className = ampmInactiveStyle;
+            } else {
+                activeAmPm = "PM";
+                this.className = ampmActiveStyle;
+                document.getElementById('ampm-am').className = ampmInactiveStyle;
+            }
             updateSubmitButtonState();
         });
 
@@ -407,7 +452,7 @@
                 let formattedBirthDate = '';
                 const bDateObj = new Date(item.birthDate);
                 const rawDisplayText = item.originalTypedFormat.trim();
-                
+                 
                 if (item.hasTime) {
                     let rawHours = bDateObj.getHours();
                     const rawMinutes = String(bDateObj.getMinutes()).padStart(2, '0');
@@ -422,12 +467,12 @@
                 }
                 
                 tableBody.insertAdjacentHTML('beforeend', `
-                    <tr class="hover:bg-gray-800/50 transition-colors duration-150">
-                        <td class="px-6 py-4 font-medium text-white select-none text-xs md:text-sm">${fullName}</td>
-                        <td class="px-6 py-4 text-cyan-300 text-center select-none font-bold text-xs md:text-sm">${item.gender}</td>
-                        <td class="px-6 py-4 text-gray-400 select-none text-xs md:text-sm">${formattedBirthDate}</td>
-                        <td class="px-6 py-4 text-amber-400 font-mono text-xs select-none">${calculatePrecisionAge(item.birthDate, item.hasTime !== false)}</td>
-                        <td class="px-6 py-4 text-center select-none">
+                    <tr class="hover:bg-gray-800/50 transition-colors duration-75 text-xs sm:text-sm">
+                        <td class="px-4 sm:px-6 py-4 font-medium text-white select-none">${fullName}</td>
+                        <td class="px-4 sm:px-6 py-4 text-cyan-300 text-center select-none font-bold">${item.gender}</td>
+                        <td class="px-4 sm:px-6 py-4 text-gray-400 select-none">${formattedBirthDate}</td>
+                        <td class="px-4 sm:px-6 py-4 text-amber-400 font-mono select-none">${calculatePrecisionAge(item.birthDate, item.hasTime !== false)}</td>
+                        <td class="px-4 sm:px-6 py-4 text-center select-none">
                             <button type="button" data-key="${item.localKey}" class="delete-btn text-red-400 hover:text-red-300 font-bold bg-red-500/10 hover:bg-red-500/20 px-2.5 py-1 rounded text-xs">Delete</button>
                         </td>
                     </tr>
