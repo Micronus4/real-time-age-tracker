@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Age Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen">
+
+    <div class="max-w-5xl mx-auto p-8 text-gray-100 relative">
+        
+        <div class="flex justify-between items-center mb-6">
+            <div class="flex items-center space-x-4">
+                <svg class="rounded-xl shadow-md border border-gray-700 bg-gradient-to-br from-teal-600 via-emerald-700 to-cyan-800" width="56" height="56" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="38" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="2" stroke-dasharray="4 6"/>
+                    <path d="M 50,20 L 50,50 L 70,65" fill="none" stroke="#22d3ee" stroke-width="4" stroke-linecap="round"/>
+                    <circle cx="50" cy="50" r="4" fill="#ffffff"/>
+                </svg>
+                <div>
+                    <h1 class="text-3xl font-bold text-white tracking-tight">Real-Time Age Tracker</h1>
+                    <p class="text-gray-400 text-sm">This tracks people's ages down to the minute (if you know it).</p>
+                </div>
+            </div>
+            <div class="bg-gray-800 border border-gray-700 px-4 py-2 rounded-lg flex items-center space-x-2 text-xs font-mono">
+                <span class="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></span>
+                <span class="text-gray-400">Total Tracked Profiles:</span>
+                <span id="live-count-badge" class="text-cyan-400 font-bold">0</span>
+            </div>
+        </div>
+
+        <div class="bg-gray-800/90 p-6 rounded-lg shadow-xl border border-gray-800 mb-8">
+            <h2 class="text-xl font-bold text-white mb-6">Add Entry</h2>
+            
+            <div class="space-y-6">
+                <div class="flex flex-col md:flex-row gap-4 items-start">
+                    <div class="w-full max-w-[180px]">
+                        <label class="block text-[11px] font-bold text-gray-400 uppercase mb-1 tracking-wider">First Name</label>
+                        <input type="text" id="form-first-name" placeholder="Felix" class="w-full h-11 bg-gray-900/50 border border-gray-700 rounded p-2.5 text-white text-sm focus:outline-none focus:border-cyan-500/80">
+                    </div>
+
+                    <div class="w-full max-w-[220px]">
+                        <label class="block text-[11px] font-bold text-gray-400 uppercase mb-1 tracking-wider">Middle Name(s) <span class="text-gray-500 font-normal lowercase">(optional)</span></label>
+                        <input type="text" id="form-middle-name" placeholder="Allen" class="w-full h-11 bg-gray-900/50 border border-gray-700 rounded p-2.5 text-white text-sm focus:outline-none focus:border-cyan-500/80">
+                    </div>
+
+                    <div class="w-full max-w-[180px]">
+                        <label class="block text-[11px] font-bold text-gray-400 uppercase mb-1 tracking-wider">Last Name</label>
+                        <input type="text" id="form-last-name" placeholder="Harris" class="w-full h-11 bg-gray-900/50 border border-gray-700 rounded p-2.5 text-white text-sm focus:outline-none focus:border-cyan-500/80">
+                    </div>
+
+                    <div class="w-full md:w-28 shrink-0">
+                        <label class="block text-[11px] font-bold text-gray-400 uppercase mb-1 tracking-wider">Gender</label>
+                        <div class="flex items-center space-x-1 bg-gray-900/50 p-1.5 rounded h-11 border border-gray-700">
+                            <button type="button" id="gender-f" class="flex-1 h-full text-xs font-bold rounded bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors duration-150">F</button>
+                            <button type="button" id="gender-m" class="flex-1 h-full text-xs font-bold rounded bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors duration-150">M</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-6 pt-2">
+                    <div class="flex flex-col sm:flex-row items-start gap-6 flex-1 w-full">
+                        <div class="space-y-1.5 w-full max-w-[320px]">
+                            <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider">Birthdate</label>
+                            <input type="text" id="form-birth-date" placeholder="e.g., &quot;July 6, 2026&quot;, &quot;6th of July, 2026&quot;, etc." class="w-full h-10 bg-gray-900/50 border border-gray-700 rounded p-2.5 text-white text-xs focus:outline-none focus:border-cyan-500">
+                            <p id="date-preview" class="text-[11px] text-gray-500 italic h-4 min-h-4"></p>
+                        </div>
+
+                        <div class="space-y-1.5 shrink-0">
+                            <h3 class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Birth Time <span class="text-gray-500 font-normal lowercase">(optional)</span></h3>
+                            <div class="flex items-center space-x-2 bg-gray-900/50 px-3 py-1 rounded border border-gray-700 h-10">
+                                <input type="text" id="input-hour" value="--" maxlength="2" class="w-8 bg-gray-800/80 border border-gray-700 rounded text-center text-xs font-mono font-bold text-cyan-400 focus:outline-none focus:border-cyan-500 p-0.5">
+                                <span class="text-gray-600 font-bold select-none pb-0.5 text-xs">:</span>
+                                <input type="text" id="input-minute" value="--" maxlength="2" class="w-8 bg-gray-800/80 border border-gray-700 rounded text-center text-xs font-mono font-bold text-cyan-400 focus:outline-none focus:border-cyan-500 p-0.5">
+                                
+                                <div class="flex items-center space-x-1 pl-2 border-l border-gray-700 h-full py-1">
+                                    <button type="button" id="ampm-am" class="px-2 h-full text-[10px] font-bold rounded bg-cyan-600 text-white transition-colors duration-150">AM</button>
+                                    <button type="button" id="ampm-pm" class="px-2 h-full text-[10px] font-bold rounded bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors duration-150">PM</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pb-0.5 w-full lg:w-auto">
+                        <button type="button" id="submit-btn" disabled class="w-full lg:w-48 bg-gray-700 text-gray-500 font-semibold py-2 px-4 rounded transition-colors duration-150 shadow-none cursor-not-allowed text-sm h-10">Confirm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="table-wrapper" class="overflow-x-auto bg-gray-800 rounded-lg shadow-xl border border-gray-700 hidden">
+            <table class="min-w-full divide-y divide-gray-700 text-left text-sm">
+                <thead class="bg-gray-800 text-gray-300 uppercase text-xs font-semibold tracking-wider">
+                    <tr>
+                        <th class="px-6 py-4">Full Name</th>
+                        <th class="px-6 py-4 text-center">Gender</th>
+                        <th class="px-6 py-4">Date of Birth</th>
+                        <th class="px-6 py-4">Age</th>
+                        <th class="px-6 py-4 text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body" class="divide-y divide-gray-700 bg-gray-900/50"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let ageMatrixDataMap = JSON.parse(localStorage.getItem('age_matrix_gender_data')) || {};
+        let activeAmPm = "AM";
+        let activeGender = ""; 
+        let isEditingTableCell = false;
+
+        const MIN_BIRTH_DATE = new Date(1900, 0, 1);
+
+        const submitBtnEnabledClass = "w-full lg:w-48 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold py-2 px-4 rounded transition-colors duration-150 shadow-md cursor-pointer text-sm h-10";
+        const submitBtnDisabledClass = "w-full lg:w-48 bg-gray-700 text-gray-500 font-semibold py-2 px-4 rounded transition-colors duration-150 shadow-none cursor-not-allowed text-sm h-10";
+
+        const btnActiveStyle = "flex-1 h-full text-xs font-bold rounded bg-cyan-600 text-white transition-colors duration-150";
+        const btnInactiveStyle = "flex-1 h-full text-xs font-bold rounded bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors duration-150";
+
+        const monthTypos = {
+            'january': 'january', 'jan': 'january', 'januery': 'january',
+            'february': 'february', 'feb': 'february', 'febuary': 'february', 'febrary': 'february',
+            'march': 'march', 'mar': 'march',
+            'april': 'april', 'apr': 'april',
+            'may': 'may',
+            'june': 'june', 'jun': 'june',
+            'july': 'july', 'jul': 'july',
+            'august': 'august', 'aug': 'august',
+            'september': 'september', 'sep': 'september', 'sept': 'september',
+            'october': 'october', 'oct': 'october',
+            'november': 'november', 'nov': 'november',
+            'december': 'december', 'dec': 'december'
+        };
+
+        function saveToLocalStorage() { localStorage.setItem('age_matrix_gender_data', JSON.stringify(ageMatrixDataMap)); }
+
+        function isValidBirthDate(date) { return date >= MIN_BIRTH_DATE && date <= new Date(); }
+
+        function parseCleanedTextDate(rawText) {
+            let str = rawText.trim().toLowerCase();
+            if (!str) return null;
+
+            Object.keys(monthTypos).forEach(typo => {
+                const regex = new RegExp(`\\b${typo}\\b`, 'g');
+                if (regex.test(str)) {
+                    str = str.replace(regex, monthTypos[typo]);
+                }
+            });
+
+            str = str.replace(/(\b\d+)(st|nd|rd|th)\b/g, '$1');
+            str = str.replace(/\bof\b/g, ' ');
+
+            const parsedTimestamp = Date.parse(str);
+            if (isNaN(parsedTimestamp)) return null;
+
+            const targetDate = new Date(parsedTimestamp);
+            return isValidBirthDate(targetDate) ? targetDate : null;
+        }
+
+        function getFormDateTimeData() {
+            const rawTextDate = document.getElementById('form-birth-date').value;
+            const validDateObj = parseCleanedTextDate(rawTextDate);
+
+            if (!validDateObj) return null;
+
+            const hRaw = document.getElementById('input-hour').value;
+            const mRaw = document.getElementById('input-minute').value;
+
+            let h = parseInt(hRaw, 10);
+            let m = parseInt(mRaw, 10);
+            let hasTime = true;
+
+            if (isNaN(h) || hRaw === '--' || isNaN(m) || mRaw === '--') {
+                h = 0; 
+                m = 0;
+                hasTime = false;
+            } else {
+                if (activeAmPm === "PM" && h < 12) h += 12;
+                if (activeAmPm === "AM" && h === 12) h = 0;
+            }
+
+            const year = validDateObj.getFullYear();
+            const month = String(validDateObj.getMonth() + 1).padStart(2, '0');
+            const day = String(validDateObj.getDate()).padStart(2, '0');
+
+            const combinedDateTimeString = `${year}-${month}-${day}T${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:00`;
+            const finalComputedDate = new Date(combinedDateTimeString);
+            
+            if (isNaN(finalComputedDate.getTime()) || finalComputedDate > new Date()) return null;
+            
+            return { chosenDate: finalComputedDate, hasTime, combinedDateTimeString, originalTypedFormat: rawTextDate };
+        }
+
+        function isFormValid() {
+            const firstName = document.getElementById('form-first-name').value.trim();
+            const lastName = document.getElementById('form-last-name').value.trim();
+
+            if (!firstName || !lastName || !activeGender) return false;
+
+            const timeData = getFormDateTimeData();
+            if (!timeData) return false;
+
+            return true;
+        }
+
+        function updateSubmitButtonState() {
+            const btn = document.getElementById('submit-btn');
+            const valid = isFormValid();
+            btn.disabled = !valid;
+            btn.className = valid ? submitBtnEnabledClass : submitBtnDisabledClass;
+        }
+
+        function autoFixMissingYearComma(element) {
+            let val = element.value;
+            const regex = /([^,]\s)(\b\d{4}\b)/g;
+            if (regex.test(val)) {
+                const selectionStart = element.selectionStart;
+                element.value = val.replace(regex, (match, p1, p2) => p1.trim() + ', ' + p2);
+                element.setSelectionRange(selectionStart + 1, selectionStart + 1);
+            }
+        }
+
+        function checkDateOnBlur() {
+            const previewEl = document.getElementById('date-preview');
+            autoFixMissingYearComma(document.getElementById('form-birth-date'));
+            const rawTextDate = document.getElementById('form-birth-date').value;
+            
+            if (!rawTextDate.trim()) {
+                previewEl.innerText = "";
+                return;
+            }
+
+            const parsed = parseCleanedTextDate(rawTextDate);
+            if (!parsed) {
+                previewEl.innerText = "Invalid date or in future";
+                previewEl.className = "text-[11px] text-red-400 font-semibold h-4 min-h-4";
+            } else {
+                previewEl.innerText = "";
+            }
+        }
+
+        function bindTimeValidations(inputId, limit) {
+            const element = document.getElementById(inputId);
+            
+            element.addEventListener('focus', function() {
+                if (this.value === '--') this.value = '';
+            });
+
+            element.addEventListener('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '');
+                updateSubmitButtonState();
+            });
+
+            element.addEventListener('blur', function() {
+                let currentNum = parseInt(this.value, 10);
+                if (this.value.trim() === '' || isNaN(currentNum) || currentNum > limit || currentNum < (inputId === 'input-hour' ? 1 : 0)) {
+                    this.value = "--";
+                } else {
+                    this.value = String(currentNum).padStart(2, '0');
+                }
+                updateSubmitButtonState();
+            });
+        }
+
+        bindTimeValidations('input-hour', 12);
+        bindTimeValidations('input-minute', 59);
+
+        function setDefaultTimeToDash() {
+            document.getElementById('input-hour').value = '--';
+            document.getElementById('input-minute').value = '--';
+            activeAmPm = "AM";
+            document.getElementById('ampm-am').className = "px-2 h-full text-[10px] font-bold rounded bg-cyan-600 text-white transition-colors duration-150";
+            document.getElementById('ampm-pm').className = "px-2 h-full text-[10px] font-bold rounded bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors duration-150";
+        }
+
+        function resetGenderToggle() {
+            activeGender = "";
+            document.getElementById('gender-f').className = btnInactiveStyle;
+            document.getElementById('gender-m').className = btnInactiveStyle;
+        }
+
+        function resetFormDefaults() {
+            document.getElementById('form-first-name').value = '';
+            document.getElementById('form-middle-name').value = '';
+            document.getElementById('form-last-name').value = '';
+            document.getElementById('form-birth-date').value = '';
+            document.getElementById('date-preview').innerText = '';
+            resetGenderToggle();
+            setDefaultTimeToDash();
+            updateSubmitButtonState();
+        }
+
+        document.getElementById('form-birth-date').addEventListener('input', function() {
+            if (this.value.length > 0) {
+                this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1);
+            }
+            autoFixMissingYearComma(this);
+            document.getElementById('date-preview').innerText = "";
+            updateSubmitButtonState();
+        });
+
+        document.getElementById('form-birth-date').addEventListener('blur', checkDateOnBlur);
+
+        document.getElementById('gender-f').addEventListener('click', function() {
+            activeGender = "F";
+            this.className = btnActiveStyle;
+            document.getElementById('gender-m').className = btnInactiveStyle;
+            updateSubmitButtonState();
+        });
+
+        document.getElementById('gender-m').addEventListener('click', function() {
+            activeGender = "M";
+            this.className = btnActiveStyle;
+            document.getElementById('gender-f').className = btnInactiveStyle;
+            updateSubmitButtonState();
+        });
+
+        ['form-first-name', 'form-middle-name', 'form-last-name'].forEach(function(id) {
+            document.getElementById(id).addEventListener('input', function() {
+                if (this.value.length > 0) {
+                    this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1);
+                }
+                updateSubmitButtonState();
+            });
+        });
+
+        document.getElementById('ampm-am').addEventListener('click', function() {
+            activeAmPm = "AM";
+            this.className = "px-2 h-full text-[10px] font-bold rounded bg-cyan-600 text-white transition-colors duration-150";
+            document.getElementById('ampm-pm').className = "px-2 h-full text-[10px] font-bold rounded bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors duration-150";
+            updateSubmitButtonState();
+        });
+        document.getElementById('ampm-pm').addEventListener('click', function() {
+            activeAmPm = "PM";
+            this.className = "px-2 h-full text-[10px] font-bold rounded bg-cyan-600 text-white transition-colors duration-150";
+            document.getElementById('ampm-am').className = "px-2 h-full text-[10px] font-bold rounded bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors duration-150";
+            updateSubmitButtonState();
+        });
+
+        function updateMetricBadge() {
+            const totalRows = Object.keys(ageMatrixDataMap).length;
+            document.getElementById('live-count-badge').innerText = totalRows;
+        }
+
+        function calculatePrecisionAge(birthDateString, hasTime) {
+            const birthDate = new Date(birthDateString);
+            const now = new Date();
+            
+            if (birthDate > now) return "Not born yet";
+
+            let years = now.getFullYear() - birthDate.getFullYear();
+            let months = now.getMonth() - birthDate.getMonth();
+            let days = now.getDate() - birthDate.getDate();
+            let hours = now.getHours() - birthDate.getHours();
+            let minutes = now.getMinutes() - birthDate.getMinutes();
+
+            if (minutes < 0) { hours--; minutes += 60; }
+            if (hours < 0) { days--; hours += 24; }
+            if (days < 0) { months--; days += new Date(now.getFullYear(), now.getMonth(), 0).getDate(); }
+            if (months < 0) { years--; months += 12; }
+
+            let weeks = Math.floor(days / 7);
+            let leftoverDays = days % 7;
+
+            const segments = [];
+            if (years > 0) segments.push(`${years} yr${years > 1 ? 's' : ''}`);
+            if (months > 0) segments.push(`${months} mo`);
+            if (weeks > 0) segments.push(`${weeks} wk${weeks > 1 ? 's' : ''}`);
+            if (leftoverDays > 0) segments.push(`${leftoverDays} d`);
+            
+            if (hasTime) {
+                if (hours > 0) segments.push(`${hours} h`);
+                if (minutes > 0) segments.push(`${minutes} m`);
+            }
+
+            return segments.length === 0 ? "Just born" : segments.join(', ');
+        }
+
+        function renderTable() {
+            const tableWrapper = document.getElementById('table-wrapper');
+            const totalRows = Object.keys(ageMatrixDataMap).length;
+
+            if (totalRows === 0) {
+                tableWrapper.classList.add('hidden');
+                return;
+            }
+
+            if (isEditingTableCell) return;
+
+            tableWrapper.classList.remove('hidden');
+            const tableBody = document.getElementById('table-body');
+            tableBody.innerHTML = ''; 
+            
+            const sortedItems = Object.keys(ageMatrixDataMap)
+                .map(k => ({ localKey: k, ...ageMatrixDataMap[k] }))
+                .sort((a, b) => new Date(a.birthDate) - new Date(b.birthDate));
+                
+            sortedItems.forEach((item) => {
+                let middleDisplay = '';
+                if (item.middleName && item.middleName.trim() !== '') {
+                    middleDisplay = ' ' + item.middleName.trim();
+                }
+                
+                const fullName = `${item.firstName}${middleDisplay} ${item.lastName}`;
+                
+                let formattedBirthDate = '';
+                const bDateObj = new Date(item.birthDate);
+                const rawDisplayText = item.originalTypedFormat.trim();
+                
+                if (item.hasTime) {
+                    let rawHours = bDateObj.getHours();
+                    const rawMinutes = String(bDateObj.getMinutes()).padStart(2, '0');
+                    const ampmMarker = rawHours >= 12 ? 'PM' : 'AM';
+                    rawHours = rawHours % 12;
+                    rawHours = rawHours ? rawHours : 12; 
+                    const formattedHours = String(rawHours).padStart(2, '0');
+                    
+                    formattedBirthDate = `${rawDisplayText} | ${formattedHours}:${rawMinutes} ${ampmMarker}`;
+                } else {
+                    formattedBirthDate = `${rawDisplayText} (Time not tracked)`;
+                }
+                
+                tableBody.insertAdjacentHTML('beforeend', `
+                    <tr class="hover:bg-gray-800/50 transition-colors duration-150">
+                        <td class="px-6 py-4 font-medium text-white select-none text-xs md:text-sm">${fullName}</td>
+                        <td class="px-6 py-4 text-cyan-300 text-center select-none font-bold text-xs md:text-sm">${item.gender}</td>
+                        <td class="px-6 py-4 text-gray-400 select-none text-xs md:text-sm">${formattedBirthDate}</td>
+                        <td class="px-6 py-4 text-amber-400 font-mono text-xs select-none">${calculatePrecisionAge(item.birthDate, item.hasTime !== false)}</td>
+                        <td class="px-6 py-4 text-center select-none">
+                            <button type="button" data-key="${item.localKey}" class="delete-btn text-red-400 hover:text-red-300 font-bold bg-red-500/10 hover:bg-red-500/20 px-2.5 py-1 rounded text-xs">Delete</button>
+                        </td>
+                    </tr>
+                `);
+            });
+        }
+
+        document.addEventListener('click', function(e) {
+            if(e.target && e.target.classList.contains('delete-btn')) {
+                const localKey = e.target.getAttribute('data-key');
+                if (confirm("Permanently wipe this entry timeline?")) {
+                    delete ageMatrixDataMap[localKey];
+                    saveToLocalStorage();
+                    updateMetricBadge();
+                    renderTable();
+                }
+            }
+        });
+
+        document.getElementById('submit-btn').addEventListener('click', function() {
+            if (this.disabled) return;
+
+            const firstNameInput = document.getElementById('form-first-name');
+            const middleNameInput = document.getElementById('form-middle-name');
+            const lastNameInput = document.getElementById('form-last-name');
+
+            const timeData = getFormDateTimeData();
+            if (!timeData) return;
+
+            const localKey = 'id_' + Date.now();
+            ageMatrixDataMap[localKey] = { 
+                firstName: firstNameInput.value.trim(), 
+                middleName: middleNameInput.value.trim(), 
+                lastName: lastNameInput.value.trim(), 
+                gender: activeGender,
+                birthDate: timeData.combinedDateTimeString,
+                hasTime: timeData.hasTime,
+                originalTypedFormat: timeData.originalTypedFormat
+            };
+
+            saveToLocalStorage();
+            updateMetricBadge();
+            renderTable();
+            resetFormDefaults();
+        });
+
+        setDefaultTimeToDash();
+        updateSubmitButtonState();
+        updateMetricBadge();
+        renderTable();
+        
+        setInterval(renderTable, 1000);
+    </script>
+</body>
+</html>
