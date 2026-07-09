@@ -5,6 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BTAS Character Age Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Smooth collapsing & dropping animation states */
+        .dropdown-menu {
+            opacity: 0;
+            transform: translateY(-4px) scale(0.95);
+            pointer-events: none;
+            transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1), transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .dropdown-menu.open {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+    </style>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen antialiased selection:bg-cyan-500 selection:text-white">
 
@@ -88,19 +102,19 @@
             </div>
         </div>
 
-        <div id="table-wrapper" class="bg-gray-800 rounded-lg shadow-xl border border-gray-700 hidden">
-            <div class="min-w-full align-middle">
-                <table class="min-w-full divide-y divide-gray-700 text-left text-sm table-fixed">
+        <div id="table-wrapper" class="bg-gray-800 rounded-lg shadow-xl border border-gray-700 hidden overflow-visible">
+            <div class="min-w-full align-middle overflow-visible">
+                <table class="min-w-full divide-y divide-gray-700 text-left text-sm table-fixed overflow-visible">
                     <thead class="bg-gray-800 text-gray-300 uppercase text-[10px] sm:text-xs font-semibold tracking-wider">
                         <tr>
                             <th class="w-1/4 px-4 sm:px-6 py-4">Full Name</th>
-                            <th class="w-[10%] px-4 sm:px-6 py-4 text-center">Gender</th>
+                            <th class="w-[12%] px-4 sm:px-6 py-4 text-center">Gender</th>
                             <th class="w-1/4 px-4 sm:px-6 py-4">Date of Birth</th>
                             <th class="w-1/4 px-4 sm:px-6 py-4">Age</th>
                             <th class="w-[15%] px-4 sm:px-6 py-4 text-center">Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="table-body" class="divide-y divide-gray-700 bg-gray-900/50"></tbody>
+                    <tbody id="table-body" class="divide-y divide-gray-700 bg-gray-900/50 overflow-visible"></tbody>
                 </table>
             </div>
         </div>
@@ -110,7 +124,7 @@
         let ageMatrixDataMap = JSON.parse(localStorage.getItem('age_matrix_gender_data')) || {};
         let activeAmPm = ""; 
         let activeGender = ""; 
-        let isEditingTableCell = false;
+        let openDropdownKey = null;
 
         const MIN_BIRTH_DATE = new Date(1900, 0, 1);
 
@@ -122,6 +136,13 @@
 
         const ampmActiveStyle = "px-2 h-full text-[10px] font-bold rounded bg-cyan-600 text-white transition-colors duration-75 ease-out";
         const ampmInactiveStyle = "px-2 h-full text-[10px] font-bold rounded bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors duration-75 ease-out";
+
+        // Balanced state theme configuration
+        const genderStyles = {
+            'F': { text: 'text-pink-400', border: 'border-pink-500/30', bg: 'bg-pink-500/10', hover: 'hover:bg-pink-500/20' },
+            'M': { text: 'text-blue-400', border: 'border-blue-500/30', bg: 'bg-blue-500/10', hover: 'hover:bg-blue-500/20' },
+            'NB': { text: 'text-gray-300', border: 'border-gray-600/40', bg: 'bg-gray-600/20', hover: 'hover:bg-gray-600/30' }
+        };
 
         const monthTypos = {
             'january': 'january', 'jan': 'january', 'januery': 'january',
@@ -419,6 +440,41 @@
             return segments.length === 0 ? "Just born" : segments.join(', ');
         }
 
+        function toggleDropdownMenu(key, event) {
+            event.stopPropagation();
+            const matchingMenu = document.getElementById(`dropdown-${key}`);
+            if (!matchingMenu) return;
+
+            if (openDropdownKey === key) {
+                matchingMenu.classList.remove('open');
+                openDropdownKey = null;
+            } else {
+                if (openDropdownKey) {
+                    const activeMenu = document.getElementById(`dropdown-${openDropdownKey}`);
+                    if (activeMenu) activeMenu.classList.remove('open');
+                }
+                matchingMenu.classList.add('open');
+                openDropdownKey = key;
+            }
+        }
+
+        function selectGenderOption(key, chosenValue) {
+            if (ageMatrixDataMap[key]) {
+                ageMatrixDataMap[key].gender = chosenValue;
+                saveToLocalStorage();
+                openDropdownKey = null; 
+                renderTable();
+            }
+        }
+
+        document.addEventListener('click', function() {
+            if (openDropdownKey) {
+                const activeMenu = document.getElementById(`dropdown-${openDropdownKey}`);
+                if (activeMenu) activeMenu.classList.remove('open');
+                openDropdownKey = null;
+            }
+        });
+
         function renderTable() {
             const tableWrapper = document.getElementById('table-wrapper');
             const totalRows = Object.keys(ageMatrixDataMap).length;
@@ -428,11 +484,8 @@
                 return;
             }
 
-            if (isEditingTableCell) return;
-
             tableWrapper.classList.remove('hidden');
             const tableBody = document.getElementById('table-body');
-            tableBody.innerHTML = ''; 
             
             const sortedItems = Object.keys(ageMatrixDataMap)
                 .map(k => ({ localKey: k, ...ageMatrixDataMap[k] }))
@@ -462,18 +515,57 @@
                 } else {
                     formattedBirthDate = `${rawDisplayText} (Time not tracked)`;
                 }
+
+                const ageText = calculatePrecisionAge(item.birthDate, item.hasTime !== false);
+                const currentStyle = genderStyles[item.gender] || genderStyles['NB'];
                 
-                tableBody.insertAdjacentHTML('beforeend', `
-                    <tr class="hover:bg-gray-800/50 transition-colors duration-75 text-xs sm:text-sm">
-                        <td class="px-4 sm:px-6 py-4 font-medium text-white select-none whitespace-normal break-words">${fullName}</td>
-                        <td class="px-4 sm:px-6 py-4 text-cyan-300 text-center select-none font-bold whitespace-normal">${item.gender}</td>
-                        <td class="px-4 sm:px-6 py-4 text-gray-400 select-none whitespace-normal break-words">${formattedBirthDate}</td>
-                        <td class="px-4 sm:px-6 py-4 text-amber-400 font-mono select-none whitespace-normal break-words">${calculatePrecisionAge(item.birthDate, item.hasTime !== false)}</td>
-                        <td class="px-4 sm:px-6 py-4 text-center select-none whitespace-normal">
-                            <button type="button" data-key="${item.localKey}" class="delete-btn text-red-400 hover:text-red-300 font-bold bg-red-500/10 hover:bg-red-500/20 px-2.5 py-1 rounded text-xs">Delete</button>
-                        </td>
-                    </tr>
-                `);
+                let existingRow = document.getElementById(`row-${item.localKey}`);
+                
+                if (!existingRow) {
+                    tableBody.insertAdjacentHTML('beforeend', `
+                        <tr id="row-${item.localKey}" class="hover:bg-gray-800/50 transition-colors duration-75 text-xs sm:text-sm border-b border-gray-800 overflow-visible">
+                            <td class="name-cell px-4 sm:px-6 py-4 font-medium text-white select-none whitespace-normal break-words">${fullName}</td>
+                            <td class="gender-cell px-4 sm:px-6 py-4 text-center select-none overflow-visible relative">
+                                <div class="relative inline-block text-left w-14 mx-auto">
+                                    <button onclick="toggleDropdownMenu('${item.localKey}', event)" class="gender-trigger flex items-center justify-between w-full px-1.5 py-0.5 text-[10px] font-bold border rounded transition-all shadow-sm bg-gray-900/40 ${currentStyle.text} ${currentStyle.border} ${currentStyle.bg} ${currentStyle.hover}">
+                                        <span class="gender-label mx-auto pl-1">${item.gender}</span>
+                                        <svg class="w-2 h-2 text-gray-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+                                    </button>
+                                    <div id="dropdown-${item.localKey}" class="dropdown-menu absolute left-1/2 -translate-x-1/2 mt-1 w-14 bg-gray-950 border border-gray-700 rounded shadow-xl z-50 overflow-hidden py-0.5">
+                                        <button onclick="selectGenderOption('${item.localKey}', 'F')" class="block w-full text-center px-1 py-0.5 text-[10px] font-bold text-pink-400 hover:bg-pink-500/10 transition-colors">F</button>
+                                        <button onclick="selectGenderOption('${item.localKey}', 'M')" class="block w-full text-center px-1 py-0.5 text-[10px] font-bold text-blue-400 hover:bg-blue-500/10 transition-colors">M</button>
+                                        <button onclick="selectGenderOption('${item.localKey}', 'NB')" class="block w-full text-center px-1 py-0.5 text-[10px] font-bold text-gray-300 hover:bg-gray-600/20 transition-colors">NB</button>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="dob-cell px-4 sm:px-6 py-4 text-gray-400 select-none whitespace-normal break-words">${formattedBirthDate}</td>
+                            <td class="age-cell px-4 sm:px-6 py-4 text-amber-400 font-mono select-none whitespace-normal break-words">${ageText}</td>
+                            <td class="px-4 sm:px-6 py-4 text-center select-none whitespace-normal">
+                                <button type="button" data-key="${item.localKey}" class="delete-btn text-red-400 hover:text-red-300 font-bold bg-red-500/10 hover:bg-red-500/20 px-2.5 py-1 rounded text-xs">Delete</button>
+                            </td>
+                        </tr>
+                    `);
+                } else {
+                    existingRow.querySelector('.name-cell').innerText = fullName;
+                    existingRow.querySelector('.dob-cell').innerText = formattedBirthDate;
+                    existingRow.querySelector('.age-cell').innerText = ageText;
+                    
+                    const triggerBtn = existingRow.querySelector('.gender-trigger');
+                    existingRow.querySelector('.gender-label').innerText = item.gender;
+                    triggerBtn.className = `gender-trigger flex items-center justify-between w-full px-1.5 py-0.5 text-[10px] font-bold border rounded transition-all shadow-sm bg-gray-900/40 ${currentStyle.text} ${currentStyle.border} ${currentStyle.bg} ${currentStyle.hover}`;
+                    
+                    const itemMenu = document.getElementById(`dropdown-${item.localKey}`);
+                    if (openDropdownKey === item.localKey) {
+                        itemMenu.classList.add('open');
+                    } else {
+                        itemMenu.classList.remove('open');
+                    }
+                }
+            });
+
+            Array.from(tableBody.children).forEach(row => {
+                const rowId = row.id.replace('row-', '');
+                if (!ageMatrixDataMap[rowId]) row.remove();
             });
         }
 
