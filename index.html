@@ -18,6 +18,14 @@
             transform: translateY(0) scale(1);
             pointer-events: auto;
         }
+        /* Custom highlight styling for active editing fields */
+        .editable-cell:focus {
+            background-color: rgba(17, 24, 39, 0.8);
+            outline: 2px solid #06b6d4;
+            border-radius: 4px;
+            padding-left: 8px;
+            padding-right: 8px;
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen antialiased selection:bg-cyan-500 selection:text-white">
@@ -43,28 +51,28 @@
             <h2 class="text-lg sm:text-xl font-bold text-white mb-6">Add Entry</h2>
             
             <div class="space-y-6">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
-                    <div class="w-full">
+                <div class="flex flex-col sm:grid sm:grid-cols-2 lg:flex lg:flex-row gap-4 items-end">
+                    <div class="w-full lg:flex-1">
                         <label class="block text-[11px] font-bold text-gray-400 uppercase mb-1 tracking-wider">First Name</label>
                         <input type="text" id="form-first-name" placeholder="Felix" class="w-full h-11 bg-gray-900/50 border border-gray-700 rounded p-2.5 text-white text-sm focus:outline-none focus:border-cyan-500/80">
                     </div>
 
-                    <div class="w-full">
+                    <div class="w-full lg:flex-1">
                         <label class="block text-[11px] font-bold text-gray-400 uppercase mb-1 tracking-wider">Middle Name(s) <span class="text-gray-500 font-normal lowercase">(opt)</span></label>
                         <input type="text" id="form-middle-name" placeholder="Allen" class="w-full h-11 bg-gray-900/50 border border-gray-700 rounded p-2.5 text-white text-sm focus:outline-none focus:border-cyan-500/80">
                     </div>
 
-                    <div class="w-full">
+                    <div class="w-full lg:flex-1">
                         <label class="block text-[11px] font-bold text-gray-400 uppercase mb-1 tracking-wider">Last Name</label>
                         <input type="text" id="form-last-name" placeholder="Harris" class="w-full h-11 bg-gray-900/50 border border-gray-700 rounded p-2.5 text-white text-sm focus:outline-none focus:border-cyan-500/80">
                     </div>
 
-                    <div class="w-full">
+                    <div class="w-full lg:w-[15%] shrink-0">
                         <label class="block text-[11px] font-bold text-gray-400 uppercase mb-1 tracking-wider">Gender</label>
-                        <div class="flex items-center space-x-1 bg-gray-900/50 p-1.5 rounded h-11 border border-gray-700">
-                            <button type="button" id="gender-f" class="flex-1 h-full text-xs font-bold rounded bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors duration-75 ease-out">F</button>
-                            <button type="button" id="gender-m" class="flex-1 h-full text-xs font-bold rounded bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors duration-75 ease-out">M</button>
-                            <button type="button" id="gender-nb" class="flex-1 h-full text-xs font-bold rounded bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors duration-75 ease-out">NB</button>
+                        <div class="flex items-center space-x-1 bg-gray-900/50 p-1 rounded h-11 border border-gray-700">
+                            <button type="button" id="gender-f" class="flex-1 h-full text-[10px] font-bold rounded bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors duration-75 ease-out">F</button>
+                            <button type="button" id="gender-m" class="flex-1 h-full text-[10px] font-bold rounded bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors duration-75 ease-out">M</button>
+                            <button type="button" id="gender-nb" class="flex-1 h-full text-[10px] font-bold rounded bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors duration-75 ease-out">NB</button>
                         </div>
                     </div>
                 </div>
@@ -72,13 +80,13 @@
                 <div class="flex flex-col lg:flex-row items-stretch lg:items-end justify-between gap-6 pt-2">
                     <div class="flex flex-col sm:flex-row items-stretch sm:items-start gap-4 flex-1 w-full">
                         
-                        <div class="space-y-1.5 w-full lg:w-1/2">
+                        <div class="space-y-1.5 w-full lg:w-[27.5%]">
                             <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider">Birthdate</label>
                             <input type="text" id="form-birth-date" placeholder="e.g., &quot;July 6, 2026&quot;, &quot;6th of July, 2026&quot;" class="w-full h-10 bg-gray-900/50 border border-gray-700 rounded p-2.5 text-white text-xs focus:outline-none focus:border-cyan-500">
                             <p id="date-preview" class="text-[11px] text-gray-500 italic h-4 min-h-4"></p>
                         </div>
 
-                        <div class="space-y-1.5 w-full lg:w-1/2">
+                        <div class="space-y-1.5 w-full lg:w-[22.5%]">
                             <h3 class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Birth Time <span class="text-gray-500 font-normal lowercase">(optional)</span></h3>
                             <div class="flex items-center space-x-2 bg-gray-900/50 px-3 py-1 rounded border border-gray-700 h-10 justify-between sm:justify-start">
                                 <div class="flex items-center space-x-1">
@@ -125,19 +133,20 @@
         let activeAmPm = ""; 
         let activeGender = ""; 
         let openDropdownKey = null;
+        // Tracking items currently being updated to temporarily bypass interval rerendering updates
+        let activelyEditingKey = null; 
 
         const MIN_BIRTH_DATE = new Date(1900, 0, 1);
 
         const submitBtnEnabledClass = "w-full lg:w-48 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold py-2 px-4 rounded transition-colors duration-75 ease-out shadow-md cursor-pointer text-sm h-10";
         const submitBtnDisabledClass = "w-full lg:w-48 bg-gray-700 text-gray-500 font-semibold py-2 px-4 rounded transition-colors duration-75 shadow-none cursor-not-allowed text-sm h-10";
 
-        const btnActiveStyle = "flex-1 h-full text-xs font-bold rounded bg-cyan-600 text-white transition-colors duration-75 ease-out";
-        const btnInactiveStyle = "flex-1 h-full text-xs font-bold rounded bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors duration-75 ease-out";
+        const btnActiveStyle = "flex-1 h-full text-[10px] font-bold rounded bg-cyan-600 text-white transition-colors duration-75 ease-out";
+        const btnInactiveStyle = "flex-1 h-full text-[10px] font-bold rounded bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors duration-75 ease-out";
 
         const ampmActiveStyle = "px-2 h-full text-[10px] font-bold rounded bg-cyan-600 text-white transition-colors duration-75 ease-out";
         const ampmInactiveStyle = "px-2 h-full text-[10px] font-bold rounded bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors duration-75 ease-out";
 
-        // Balanced state theme configuration
         const genderStyles = {
             'F': { text: 'text-pink-400', border: 'border-pink-500/30', bg: 'bg-pink-500/10', hover: 'hover:bg-pink-500/20' },
             'M': { text: 'text-blue-400', border: 'border-blue-500/30', bg: 'bg-blue-500/10', hover: 'hover:bg-blue-500/20' },
@@ -467,6 +476,101 @@
             }
         }
 
+        // Cell Inline Modification Processing
+        function handleCellFocus(key) {
+            activelyEditingKey = key; // Pauses time updates tracking for this specific record item
+        }
+
+        function handleNameSave(key, element) {
+            const rawText = element.innerText.trim();
+            if (!rawText) {
+                renderTable();
+                activelyEditingKey = null;
+                return;
+            }
+
+            // Simple split parsing logic for first/middle/last name updating structure safely
+            const segments = rawText.split(/\s+/);
+            if (segments.length === 1) {
+                ageMatrixDataMap[key].firstName = segments[0];
+                ageMatrixDataMap[key].middleName = "";
+                ageMatrixDataMap[key].lastName = "";
+            } else if (segments.length === 2) {
+                ageMatrixDataMap[key].firstName = segments[0];
+                ageMatrixDataMap[key].middleName = "";
+                ageMatrixDataMap[key].lastName = segments[1];
+            } else {
+                ageMatrixDataMap[key].firstName = segments[0];
+                ageMatrixDataMap[key].lastName = segments[segments.length - 1];
+                ageMatrixDataMap[key].middleName = segments.slice(1, segments.length - 1).join(" ");
+            }
+
+            saveToLocalStorage();
+            activelyEditingKey = null;
+            renderTable(); // Safe runtime resume
+        }
+
+        function handleDobSave(key, element) {
+            const fullRawText = element.innerText.trim();
+            if (!fullRawText) {
+                renderTable();
+                activelyEditingKey = null;
+                return;
+            }
+
+            // Split date segment logic cleanly apart from any added timestamps formatting details
+            let textDatePart = fullRawText;
+            let timePart = "";
+            if (fullRawText.includes("|")) {
+                const pieces = fullRawText.split("|");
+                textDatePart = pieces[0].trim();
+                timePart = pieces[1].trim();
+            } else if (fullRawText.includes("(Time")) {
+                const pieces = fullRawText.split("(Time");
+                textDatePart = pieces[0].trim();
+            }
+
+            const parsedDateObj = parseCleanedTextDate(textDatePart);
+            if (!parsedDateObj) {
+                alert("Invalid date entry. Change cancelled.");
+                activelyEditingKey = null;
+                renderTable();
+                return;
+            }
+
+            let hour = 0;
+            let minute = 0;
+            let hasTime = ageMatrixDataMap[key].hasTime;
+
+            if (timePart) {
+                // Parse out explicit parameters like: 11:32 AM
+                const timeRegex = /(\d+):(\d+)\s*(AM|PM)/i;
+                const match = timePart.match(timeRegex);
+                if (match) {
+                    hour = parseInt(match[1], 10);
+                    minute = parseInt(match[2], 10);
+                    const marker = match[3].toUpperCase();
+                    if (marker === "PM" && hour < 12) hour += 12;
+                    if (marker === "AM" && hour === 12) hour = 0;
+                    hasTime = true;
+                }
+            }
+
+            const year = parsedDateObj.getFullYear();
+            const month = String(parsedDateObj.getMonth() + 1).padStart(2, '0');
+            const day = String(parsedDateObj.getDate()).padStart(2, '0');
+
+            const combinedDateTimeString = `${year}-${month}-${day}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:00`;
+            
+            ageMatrixDataMap[key].birthDate = combinedDateTimeString;
+            ageMatrixDataMap[key].originalTypedFormat = textDatePart;
+            ageMatrixDataMap[key].hasTime = hasTime;
+
+            saveToLocalStorage();
+            activelyEditingKey = null;
+            renderTable();
+        }
+
         document.addEventListener('click', function() {
             if (openDropdownKey) {
                 const activeMenu = document.getElementById(`dropdown-${openDropdownKey}`);
@@ -492,6 +596,11 @@
                 .sort((a, b) => new Date(a.birthDate) - new Date(b.birthDate));
                 
             sortedItems.forEach((item) => {
+                // Completely bypass rerendering updates on elements currently targeted by user text interaction
+                if (activelyEditingKey === item.localKey) {
+                    return; 
+                }
+
                 let middleDisplay = '';
                 if (item.middleName && item.middleName.trim() !== '') {
                     middleDisplay = ' ' + item.middleName.trim();
@@ -523,25 +632,33 @@
                 
                 if (!existingRow) {
                     tableBody.insertAdjacentHTML('beforeend', `
-                        <tr id="row-${item.localKey}" class="hover:bg-gray-800/50 transition-colors duration-75 text-xs sm:text-sm border-b border-gray-800 overflow-visible">
-                            <td class="name-cell px-4 sm:px-6 py-4 font-medium text-white select-none whitespace-normal break-words">${fullName}</td>
-                            <td class="gender-cell px-4 sm:px-6 py-4 text-center select-none overflow-visible relative">
-                                <div class="relative inline-block text-left w-14 mx-auto">
-                                    <button onclick="toggleDropdownMenu('${item.localKey}', event)" class="gender-trigger flex items-center justify-between w-full px-1.5 py-0.5 text-[10px] font-bold border rounded transition-all shadow-sm bg-gray-900/40 ${currentStyle.text} ${currentStyle.border} ${currentStyle.bg} ${currentStyle.hover}">
-                                        <span class="gender-label mx-auto pl-1">${item.gender}</span>
-                                        <svg class="w-2 h-2 text-gray-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+                        <tr id=\"row-${item.localKey}\" class=\"hover:bg-gray-800/50 transition-colors duration-75 text-xs sm:text-sm border-b border-gray-800 overflow-visible\">
+                            <td contenteditable=\"true\" 
+                                onfocus=\"handleCellFocus('${item.localKey}')\" 
+                                onblur=\"handleNameSave('${item.localKey}', this)\" 
+                                onkeydown=\"if(event.key === 'Enter') { event.preventDefault(); this.blur(); }\"
+                                class=\"name-cell editable-cell px-4 sm:px-6 py-4 font-medium text-white whitespace-normal break-words cursor-edit select-text focus:bg-gray-900\">${fullName}</td>
+                            <td class=\"gender-cell px-4 sm:px-6 py-4 text-center select-none overflow-visible relative\">
+                                <div class=\"relative inline-block text-left w-14 mx-auto\">
+                                    <button onclick=\"toggleDropdownMenu('${item.localKey}', event)\" class=\"gender-trigger flex items-center justify-between w-full px-1.5 py-0.5 text-[10px] font-bold border rounded transition-all shadow-sm bg-gray-900/40 ${currentStyle.text} ${currentStyle.border} ${currentStyle.bg} ${currentStyle.hover}\">
+                                        <span class=\"gender-label mx-auto pl-1\">${item.gender}</span>
+                                        <svg class=\"w-2 h-2 text-gray-500 shrink-0\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"3\" d=\"M19 9l-7 7-7-7\"></path></svg>
                                     </button>
-                                    <div id="dropdown-${item.localKey}" class="dropdown-menu absolute left-1/2 -translate-x-1/2 mt-1 w-14 bg-gray-950 border border-gray-700 rounded shadow-xl z-50 overflow-hidden py-0.5">
-                                        <button onclick="selectGenderOption('${item.localKey}', 'F')" class="block w-full text-center px-1 py-0.5 text-[10px] font-bold text-pink-400 hover:bg-pink-500/10 transition-colors">F</button>
-                                        <button onclick="selectGenderOption('${item.localKey}', 'M')" class="block w-full text-center px-1 py-0.5 text-[10px] font-bold text-blue-400 hover:bg-blue-500/10 transition-colors">M</button>
-                                        <button onclick="selectGenderOption('${item.localKey}', 'NB')" class="block w-full text-center px-1 py-0.5 text-[10px] font-bold text-gray-300 hover:bg-gray-600/20 transition-colors">NB</button>
+                                    <div id=\"dropdown-${item.localKey}\" class=\"dropdown-menu absolute left-1/2 -translate-x-1/2 mt-1 w-14 bg-gray-955 border border-gray-700 rounded shadow-xl z-50 overflow-hidden py-0.5\">
+                                        <button onclick=\"selectGenderOption('${item.localKey}', 'F')\" class=\"block w-full text-center px-1 py-0.5 text-[10px] font-bold text-pink-400 hover:bg-pink-500/10 transition-colors\">F</button>
+                                        <button onclick=\"selectGenderOption('${item.localKey}', 'M')\" class=\"block w-full text-center px-1 py-0.5 text-[10px] font-bold text-blue-400 hover:bg-blue-500/10 transition-colors\">M</button>
+                                        <button onclick=\"selectGenderOption('${item.localKey}', 'NB')\" class=\"block w-full text-center px-1 py-0.5 text-[10px] font-bold text-gray-300 hover:bg-gray-600/20 transition-colors\">NB</button>
                                     </div>
                                 </div>
                             </td>
-                            <td class="dob-cell px-4 sm:px-6 py-4 text-gray-400 select-none whitespace-normal break-words">${formattedBirthDate}</td>
-                            <td class="age-cell px-4 sm:px-6 py-4 text-amber-400 font-mono select-none whitespace-normal break-words">${ageText}</td>
-                            <td class="px-4 sm:px-6 py-4 text-center select-none whitespace-normal">
-                                <button type="button" data-key="${item.localKey}" class="delete-btn text-red-400 hover:text-red-300 font-bold bg-red-500/10 hover:bg-red-500/20 px-2.5 py-1 rounded text-xs">Delete</button>
+                            <td contenteditable=\"true\" 
+                                onfocus=\"handleCellFocus('${item.localKey}')\" 
+                                onblur=\"handleDobSave('${item.localKey}', this)\" 
+                                onkeydown=\"if(event.key === 'Enter') { event.preventDefault(); this.blur(); }\"
+                                class=\"dob-cell editable-cell px-4 sm:px-6 py-4 text-gray-400 whitespace-normal break-words cursor-edit select-text focus:bg-gray-900\">${formattedBirthDate}</td>
+                            <td class=\"age-cell px-4 sm:px-6 py-4 text-amber-400 font-mono select-none whitespace-normal break-words\">${ageText}</td>
+                            <td class=\"px-4 sm:px-6 py-4 text-center select-none whitespace-normal\">
+                                <button type=\"button\" data-key=\"${item.localKey}\" class=\"delete-btn text-red-400 hover:text-red-300 font-bold bg-red-500/10 hover:bg-red-500/20 px-2.5 py-1 rounded text-xs\">Delete</button>
                             </td>
                         </tr>
                     `);
