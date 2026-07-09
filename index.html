@@ -436,14 +436,14 @@
             let leftoverDays = days % 7;
 
             const segments = [];
-            if (years > 0) segments.push(`${years} yr${years > 1 ? 's' : ''}`);
-            if (months > 0) segments.push(`${months} mo`);
-            if (weeks > 0) segments.push(`${weeks} wk${weeks > 1 ? 's' : ''}`);
+            if (years > 0) segments.push(`${years} y`);
+            if (months > 0) segments.push(`${months} m`);
+            if (weeks > 0) segments.push(`${weeks} w`);
             if (leftoverDays > 0) segments.push(`${leftoverDays} d`);
             
             if (hasTime) {
                 if (hours > 0) segments.push(`${hours} h`);
-                if (minutes > 0) segments.push(`${minutes} m`);
+                if (minutes > 0) segments.push(`${minutes} ${minutes === 1 ? 'min' : 'mins'}`);
             }
 
             return segments.length === 0 ? "Just born" : segments.join(', ');
