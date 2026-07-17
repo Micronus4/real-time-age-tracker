@@ -55,17 +55,17 @@
                 <div class="flex flex-col sm:grid sm:grid-cols-2 lg:flex lg:flex-row gap-4 items-end">
                     <div class="w-full lg:flex-1">
                         <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1 tracking-wider font-mono">First Name</label>
-                        <input type="text" id="form-first-name" placeholder="Felix" class="w-full h-11 bg-slate-950/60 border border-slate-800 rounded p-2.5 text-slate-200 text-sm focus:outline-none focus:border-cyan-600/80 focus:ring-1 focus:ring-cyan-600/30 font-mono">
+                        <input type="text" id="form-first-name" placeholder="Felix" class="w-full h-11 bg-slate-950/60 border border-slate-800 rounded p-2.5 text-slate-200 text-[11px] sm:text-sm focus:outline-none focus:border-cyan-600/80 focus:ring-1 focus:ring-cyan-600/30 font-mono">
                     </div>
 
                     <div class="w-full lg:flex-1">
                         <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1 tracking-wider font-mono">Middle Name(s) <span class="text-slate-500 font-normal lowercase">(optional)</span></label>
-                        <input type="text" id="form-middle-name" placeholder="Allen" class="w-full h-11 bg-slate-950/60 border border-slate-800 rounded p-2.5 text-slate-200 text-sm focus:outline-none focus:border-cyan-600/80 focus:ring-1 focus:ring-cyan-600/30 font-mono">
+                        <input type="text" id="form-middle-name" placeholder="Allen" class="w-full h-11 bg-slate-950/60 border border-slate-800 rounded p-2.5 text-slate-200 text-[11px] sm:text-sm focus:outline-none focus:border-cyan-600/80 focus:ring-1 focus:ring-cyan-600/30 font-mono">
                     </div>
 
                     <div class="w-full lg:flex-1">
                         <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1 tracking-wider font-mono">Last Name</label>
-                        <input type="text" id="form-last-name" placeholder="Harris" class="w-full h-11 bg-slate-950/60 border border-slate-800 rounded p-2.5 text-slate-200 text-sm focus:outline-none focus:border-cyan-600/80 focus:ring-1 focus:ring-cyan-600/30 font-mono">
+                        <input type="text" id="form-last-name" placeholder="Harris" class="w-full h-11 bg-slate-950/60 border border-slate-800 rounded p-2.5 text-slate-200 text-[11px] sm:text-sm focus:outline-none focus:border-cyan-600/80 focus:ring-1 focus:ring-cyan-600/30 font-mono">
                     </div>
 
                     <div class="w-full lg:w-[15%] shrink-0">
@@ -83,20 +83,20 @@
                         
                         <div class="space-y-1.5 w-full lg:w-[39.56%]">
                             <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider font-mono">date of birth</label>
-                            <input type="text" id="form-birth-date" placeholder="e.g., &quot;July 6, 2026&quot;, &quot;6th of July, 2026&quot;" class="w-full h-10 bg-slate-950/60 border border-slate-800 rounded p-2.5 text-slate-200 text-xs focus:outline-none focus:border-cyan-600 font-mono">
+                            <input type="text" id="form-birth-date" placeholder="e.g., &quot;July 6, 2026&quot;, &quot;6th of July, 2026&quot;" class="w-full h-10 bg-slate-950/60 border border-slate-800 rounded p-2.5 text-slate-200 text-[11px] sm:text-xs focus:outline-none focus:border-cyan-600 font-mono">
                             <p id="date-preview" class="text-[11px] text-red-400 font-mono italic h-4 min-h-4"></p>
                         </div>
 
-                        <div class="space-y-1.5 w-full lg:w-[22.5%]">
-                            <h3 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider font-mono">Birth Time <span class="text-slate-500 font-normal lowercase">(optional)</span></h3>
-                            <div class="flex items-center space-x-2 bg-slate-950/60 px-3 py-1 rounded border border-slate-800 h-10 justify-between sm:justify-start">
-                                <div class="flex items-center space-x-1">
+                        <div class="space-y-1.5 w-full lg:w-[22.5%] text-center">
+                            <h3 class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider font-mono w-full text-center">Birth Time <span class="text-slate-500 font-normal lowercase">(optional)</span></h3>
+                            <div class="flex items-center justify-center space-x-2 bg-slate-950/60 px-3 py-1 rounded border border-slate-800 h-10 w-full mx-auto">
+                                <div class="flex items-center space-x-1 justify-center">
                                     <input type="text" id="input-hour" value="--" maxlength="2" class="w-8 bg-slate-900 border border-slate-800 rounded text-center text-xs font-mono font-bold text-slate-300 focus:outline-none focus:border-cyan-600 p-0.5">
                                     <span class="text-slate-700 font-bold select-none pb-0.5 text-xs font-mono">:</span>
                                     <input type="text" id="input-minute" value="--" maxlength="2" class="w-8 bg-slate-900 border border-slate-800 rounded text-center text-xs font-mono font-bold text-slate-300 focus:outline-none focus:border-cyan-600 p-0.5">
                                 </div>
                                 
-                                <div class="flex items-center space-x-1 pl-2 border-l border-slate-800 h-full py-1">
+                                <div class="flex items-center space-x-1 pl-2 border-l border-slate-800 h-full py-1 justify-center">
                                     <button type="button" id="ampm-am" class="px-2 h-full text-[10px] font-bold rounded bg-slate-900 text-slate-400 hover:bg-slate-800 transition-colors duration-75 ease-out font-mono">AM</button>
                                     <button type="button" id="ampm-pm" class="px-2 h-full text-[10px] font-bold rounded bg-slate-900 text-slate-400 hover:bg-slate-800 transition-colors duration-75 ease-out font-mono">PM</button>
                                 </div>
